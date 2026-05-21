@@ -1,0 +1,150 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4">
+
+    <!-- ===============================
+         ARCHIVOS AUDITABLES
+    =============================== -->
+    <h4>Datos cargados</h4>
+    <p class="text-muted">Archivos disponibles para auditoría</p>
+
+    <table class="table table-striped table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Archivo</th>
+                <th>Filas</th>
+                <th>Columnas</th>
+                <th>Fecha de carga</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for archivo in archivos %}
+            <tr>
+                <td>{{ archivo.filename }}</td>
+                <td>{{ archivo.rows }}</td>
+                <td>{{ archivo.columns }}</td>
+                <td>{{ archivo.uploaded_at }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+
+                        <a
+                            href="{{ url_for('ver_datos', filename=archivo.filename) }}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+                            Ver
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('eliminar_dato', filename=archivo.filename) }}"
+                            onsubmit="return confirm('¿Estás seguro de eliminar este archivo?');"
+                            class="m-0"
+                        >
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Eliminar
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ===============================
+         DOCUMENTOS BASE
+    =============================== -->
+    <hr class="my-5">
+
+    <h4>Documentos base</h4>
+    <p class="text-muted">
+        Archivos de referencia usados como insumo para las reglas de auditoría
+    </p>
+
+    <!-- Formulario de carga -->
+    <form
+        action="{{ url_for('upload_base') }}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="row g-2 align-items-end mb-4"
+    >
+        <div class="col-md-5">
+            <label class="form-label">Archivo base</label>
+            <input type="file" name="archivo" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Tipo de documento</label>
+            <select name="tipo" class="form-select" required>
+                <option value="">Seleccione…</option>
+                <option value="inventario">Inventario</option>
+                <option value="forecast">Forecast</option>
+                <option value="estatus">Estatus de ítems</option>
+                <option value="LeadTime">leadTime</option>
+                <option value="Activations">Activation / Deactivation</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-dark w-100">
+                Cargar documento base
+            </button>
+        </div>
+    </form>
+
+    <!-- Tabla documentos base -->
+    <table class="table table-striped table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Archivo</th>
+                <th>Tipo</th>
+                <th>Fecha de carga</th>
+                <th>Acción</th>
+            </tr>
+        </thead> 
+        <tbody>
+            {% for base in bases %}
+            <tr>
+                <td>{{ base.filename }}</td>
+                <td>{{ base.tipo }}</td>
+                <td>{{ base.uploaded_at }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+
+                        <a
+                            href="{{ url_for('ver_base', filename=base.filename) }}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+                            Ver
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('eliminar_base', filename=base.filename) }}"
+                            onsubmit="return confirm('¿Estás seguro de eliminar este archivo?');"
+                            class="m-0"
+                        >
+                            <button class="btn btn-sm btn-danger">
+                                Eliminar
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">
+                    No hay documentos base cargados
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4">
+    <h4>Detalle del registro con inconsistencia</h4>
+
+    <p class="text-muted">
+        <strong>Archivo auditado:</strong> {{ archivo }} <br>
+        <strong>Fila Excel:</strong> {{ fila }}
+    </p>
+
+    {% if detalle %}
+    <h5 class="mt-3">Detalle LeadTime (LT_04)</h5>
+    <ul>
+        <li><strong>Producto:</strong> {{ datos.get('product', 'N/A') }}</li>
+        <li><strong>LeadTime real:</strong> {{ detalle.leadtime_real if detalle.leadtime_real is not none else "No disponible" }} días</li>
+        
+        <p><strong>LeadTime base:</strong></p>
+            <ul>
+                {% for item in detalle.detalle_base %}
+                    <li>
+                        {{ item.valor }} días ({{ item.fuente }})
+                    </li>
+                {% endfor %}
+            </ul>
+
+        <li><strong>Diferencia:</strong> {{ detalle.diferencia if detalle.diferencia is not none else "No disponible" }} días</li>
+        <li><strong>Severidad:</strong>
+            <span class="badge {% if detalle.severidad == 'Critica' %}bg-danger{% elif detalle.severidad == 'Alta' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                {{ detalle.severidad }}
+            </span>
+        </li>
+    </ul>
+    {% endif %}
+
+    {% if otras_reglas %}
+    <h5 class="mt-3">Otras inconsistencias en esta fila</h5>
+    <ul>
+        {% for inc in otras_reglas %}
+        
+<li>
+    <strong>{{ inc.regla_id }}</strong> — {{ inc.mensaje }}
+
+    
+    {% if inc.fechaEntrega and inc.fechaOrden %}
+        <div class="mt-2">
+            <b>ETD:</b> <span class="text-danger">{{ inc.fechaEntrega }}</span><br>
+            <b>Entrega:</b> <span class="text-success">{{ inc.fechaOrden }}</span>
+        </div>
+    {% endif %}
+
+    
+    {% if inc.etd and inc.fechaEntrega %}
+    <div class="mt-2">
+        <b>ETD:</b> <span class="text-danger">{{ inc.etd }}</span><br>
+        <b>Entrega:</b> <span class="text-success">{{ inc.fechaEntrega }}</span>
+    </div>
+    {% endif %}
+
+    
+    {% if inc.etd is none %}
+    <div class="mt-2 text-danger">
+        ETD no tiene valor
+    </div>
+    {% endif %}
+     
+    <br>
+    <b>Severidad:</b>
+    <span class="badge 
+        {% if inc.severidad == 'Alta' %}bg-danger
+        {% elif inc.severidad == 'Media' %}bg-warning text-dark
+        {% else %}bg-secondary
+        {% endif %} ms-1">
+        {{ inc.severidad }}
+    </span>
+</li>
+
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if not detalle and not otras_reglas %}
+    <div class="alert alert-secondary mt-3">
+        No se encontró detalle adicional para esta fila.
+    </div>
+    {% endif %}
+
+    
+    {% if detalle_lifecycle %}
+        <h5>Detalle Lifecycle</h5>
+        <ul>
+            <li><b>Fecha activación:</b> {{ detalle_lifecycle.fecha_activacion }}</li>
+            <li><b>Fecha actual:</b> {{ detalle_lifecycle.fecha_actual }}</li>
+            <li><b>Días transcurridos:</b> {{ detalle_lifecycle.dias_transcurridos }}</li>
+            <li><b>Regla base:</b> {{ detalle_lifecycle.regla_base }} días</li>
+            <li><b>Status actual:</b> {{ detalle_lifecycle.status_actual }}</li>
+            <li><b>Status esperado:</b> {{ detalle_lifecycle.status_esperado }}</li>
+        </ul>
+    {% endif %}
+
+
+
+
+
+    <h5 class="mt-4">Datos del registro</h5>
+    <div class="table-responsive mt-2">
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for campo, valor in datos.items() %}
+                {% if not campo.startswith('_') %}
+                <tr>
+                    <td><strong>{{ campo }}</strong></td>
+                    <td>{{ valor if valor is not none else "—" }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{{ url_for('resultados') }}" class="btn btn-secondary mt-3">
+        Volver a Resultados
+    </a>
+</div>
+{% endblock %}

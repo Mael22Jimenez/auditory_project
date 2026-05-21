@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Auditoría Automatizada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav class="col-md-2 d-none d-md-block sidebar vh-100 p-0" style="background-color: black;">
+            <div class= "d-flex align-items-center p-3 w-100" style="background-color: black;">
+            <img src="{{ url_for('static', filename='img/image.png')}}" alt="Imagen" width="100px" class="img-fluid" >
+            <h3 class="text-white">HY CITE</h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white active" href="{{ url_for('index') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" href="{{ url_for('datos') }}">Datos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" href="{{ url_for('reglas') }}">Reglas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" href="{{ url_for('anomalias') }}">Anomalías IA  (Fase de prueba)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" href="{{ url_for('resultados') }}">Resultados</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-md-10 ms-sm-auto px-0">
+
+            <!-- HEADER -->
+            
+                <div class="pt-4 pb-3 p-3 border-bottom" style="background-color: #F47C3C;">
+                    <h2 class="text-black">Sistema de Auditoría Automatizada</h2>
+                    <p class="text-black">Auditoría Basada en Reglas</p>
+                </div>
+            {% block content %}
+                
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

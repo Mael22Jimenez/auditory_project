@@ -1,0 +1,46 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4">
+
+    <h4>Documento base</h4>
+    <p class="text-muted">
+        Vista previa del documento base cargado
+    </p>
+
+    <p>
+        <strong>Archivo:</strong> {{ filename }}
+    </p>
+
+    <a href="{{ url_for('datos') }}" class="btn btn-secondary mt-3 mb-3">
+        Volver a Datos
+    </a>
+
+    <div style="overflow-x: auto;">
+    
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        {% for col in columnas %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in filas %}
+                    <tr>
+                        {% for valor in fila %}
+                        <td>{{ valor }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+</div>
+{% endblock %}

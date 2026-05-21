@@ -1,0 +1,41 @@
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4">
+    <h4>Anomalías detectadas por IA</h4>
+    <p class="text-muted">
+        Detección automática de comportamientos atípicos (modelo no supervisado)
+    </p>
+
+    {% if anomalias %}
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Fila</th>
+                <th>Score</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Severidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in anomalias %}
+            <tr>
+                <td>{{ a.fila }}</td>
+                <td>{{ a.score }}</td>
+                <td>{{ a.tipo }}</td>
+                <td>{{ a.descripcion }}</td>
+                <td class="text-danger">{{ a.severidad }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="alert alert-success mt-4">
+            No se detectaron anomalías estadísticamente significativas.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

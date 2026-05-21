@@ -1,0 +1,478 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-4">
+
+<p class="text-muted small">
+    Última auditoría:
+    <strong>{{ resumen.archivo }}</strong><br>
+    Ejecutada el {{ resumen.fecha }}
+</p>
+
+<form method="POST" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label class="form-label">Tipo de auditoría</label>
+        <select name="auditoria_tipo" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="lifecycle_status">Lifecycle Status</option>
+            <option value="leadtimes">Lead Times</option>
+            <option value="leadtime_vs_base">leadtime vs base</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Archivo a auditar</label>
+        <input type="file" name="archivo" class="form-control" required>
+    </div>
+
+    <button class="btn btn-dark">Ejecutar auditoría</button>
+
+</form>
+
+{% if error %}
+<div class="alert alert-danger mt-3">
+    {{ error }}
+</div>
+{% endif %}
+
+<!-- KPI -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h6>Registros auditados</h6>
+            <h3>{{ resumen.registros_auditados }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h6>Inconsistencias</h6>
+            <h3 class="text-warning">{{ resumen.inconsistencias }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h6>Anomalías IA</h6>
+            <h3 class="text-danger">{{ resumen.anomalias }}</h3>
+        </div>
+    </div>
+</div>
+
+<h2 style="margin-top: 20px;"><b>Dashboard de Auditoría</b></h2>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+
+    <div style="height:300px; position:relative;">
+        <h3>Severidad</h3>
+        <canvas id="chartSeveridad"></canvas>
+    </div>
+
+
+        
+    <div style="height:300px; position: relative; margin-top: 30px;">
+        <h3>Reglas</h3>
+        <canvas id="chartReglas"></canvas>
+    </div>
+
+
+    {% if resumen.tipo_auditoria == "lifecycle_status" %}
+        
+        <div style="height:300px; position:relative; margin-top: 30px;">
+            <h3>Status actual de inconsistencias</h3>
+            <canvas id="chartStatus"></canvas>
+        </div>
+
+
+        <div style="height:300px; margin:30px; width: 350px; position: relative; margin-top: 50px;  ">
+            <h3>Status esperado</h3>
+            <canvas id="chartEsperado"></canvas>
+        </div>
+    {% endif %}
+
+
+         <div style="margin:20px; height:300px; position:relative;">
+        <h3>Distribución</h3>
+        <canvas id="chartPie"></canvas>
+        </div>
+</div>
+
+
+
+<div class="card p-3 mb-4 mt-5">
+
+    <h5>Inconsistencias por owner</h5>
+
+    <select id="ownerFilter" class="form-select mb-3">
+        <option value="all">Todos los owners</option>
+    </select>
+
+    
+    
+    <select id="viewType" class="form-select mb-3">
+        <option value="general">Vista General</option>
+        <option value="reglas">Ver por Regla</option>
+        <option value="severidad">Ver por Severidad</option>
+    </select>
+
+
+
+    <div style="height:300px; position:relative; overflow:hidden;">
+        <canvas id="ownerChart" style="max-height: 300px;"></canvas>
+    </div>
+
+</div>
+
+
+<button onclick="exportarGraficos()" class="btn btn-success">
+    Exportar con Dashboard
+</button>
+
+
+
+<!--  DATA BASE -->
+<div id="dataCharts"
+     data-severidad-labels='{{ (severidad_count or {}) | tojson }}'
+     data-regla-labels='{{ (regla_count or {}) | tojson }}'>
+</div>
+
+<!--  DATA LIFECYCLE -->
+<div id="dataLifecycle"
+     data-status='{{ (status_count or {}) | tojson }}'
+     data-expected='{{ (expected_count or {}) | tojson }}'>
+</div>
+
+<!--  DATA RESUMEN -->
+<div id="dataResumen"
+     data-total='{{ resumen.registros_auditados | tojson }}'
+     data-inconsistencias='{{ resumen.inconsistencias | tojson }}'>
+</div>
+
+<script>
+
+const dataDiv = document.getElementById("dataCharts");
+
+const severidadObj = JSON.parse(dataDiv.dataset.severidadLabels);
+const reglaObj = JSON.parse(dataDiv.dataset.reglaLabels);
+
+const severidadLabels = Object.keys(severidadObj);
+const severidadData = Object.values(severidadObj);
+
+const reglaLabels = Object.keys(reglaObj);
+const reglaData = Object.values(reglaObj);
+
+// SEVERIDAD
+window.chartSeveridad = new Chart(document.getElementById('chartSeveridad'), {
+    type: 'bar',
+    data: {
+        labels: severidadLabels,
+        datasets: [{
+            label: 'Cantidad',
+            data: severidadData,
+            backgroundColor: ['orange','red','yellow','green']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+//  REGLAS
+window.chartReglas = new Chart(document.getElementById('chartReglas'), {
+    type: 'bar',
+    data: {
+        labels: reglaLabels,
+        datasets: [{
+            label: 'Cantidad',
+            data: reglaData,
+            backgroundColor: 'blue'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+//  RESUMEN
+const resumenDiv = document.getElementById("dataResumen");
+
+const total = Number(JSON.parse(resumenDiv.dataset.total || "0"));
+const inconsistencias = Number(JSON.parse(resumenDiv.dataset.inconsistencias || "0"));
+const correctos = total - inconsistencias;
+
+window.chartPie = new Chart(document.getElementById('chartPie'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Correctos', 'Inconsistencias'],
+        datasets: [{
+            data: [correctos, inconsistencias],
+            backgroundColor: ['green', 'red']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+//  LIFECYCLE
+const lifecycleDiv = document.getElementById("dataLifecycle");
+
+if (lifecycleDiv) {
+
+    const statusObj = JSON.parse(lifecycleDiv.dataset.status || "{}");
+    const expectedObj = JSON.parse(lifecycleDiv.dataset.expected || "{}");
+
+    const statusLabels = Object.keys(statusObj);
+    const statusData = Object.values(statusObj);
+
+    const expectedLabels = Object.keys(expectedObj);
+    const expectedData = Object.values(expectedObj);
+
+    const chartStatus = document.getElementById('chartStatus');
+    const chartEsperado = document.getElementById('chartEsperado');
+
+    if (chartStatus && statusLabels.length > 0) {
+        new Chart(chartStatus, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: statusData,
+                    backgroundColor: 'purple'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    if (chartEsperado && expectedLabels.length > 0) {
+        new Chart(chartEsperado, {
+            type: 'bar',
+            data: {
+                labels: expectedLabels,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: expectedData,
+                    backgroundColor: ['purple']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+                
+            }
+        });
+    }
+}
+
+</script>
+
+
+
+
+<script>
+(function () {
+
+    const ownerData = JSON.parse('{{ owner_data | safe }}');
+
+    const owners = Object.keys(ownerData);
+
+    const ownerSelect = document.getElementById("ownerFilter");
+    const viewSelect = document.getElementById("viewType");
+
+    // ✅ llenar dropdown owners
+    owners.forEach(owner => {
+        let option = document.createElement("option");
+        option.value = owner;
+        option.text = owner;
+        ownerSelect.appendChild(option);
+    });
+
+    const ctx = document.getElementById('ownerChart');
+
+    let chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Cantidad',
+                data: [],
+                backgroundColor: 'brown'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false
+        }
+    });
+    window.ownerChart = chart;
+
+  
+    
+    
+
+
+function updateChart() {
+
+    let owner = ownerSelect.value;
+    let tipo = viewSelect.value;
+
+    let labels = [];
+    let data = [];
+
+    if (tipo === "general") {
+
+        let dataGeneral = {};
+
+        Object.keys(ownerData).forEach(ownerName => {
+
+            let total = 0;
+
+            let reglas = ownerData[ownerName]["reglas"];
+
+            Object.values(reglas).forEach(val => {
+                total += val;
+            });
+
+            dataGeneral[ownerName] = total;
+        });
+
+        labels = Object.keys(dataGeneral);
+        data = Object.values(dataGeneral);
+
+    }
+
+    else if (owner !== "all" && ownerData[owner]) {
+
+        let detalle = ownerData[owner][tipo];
+
+        labels = Object.keys(detalle);
+        data = Object.values(detalle);
+
+    }
+
+    else {
+
+        let dataAcumulada = {};
+
+        Object.values(ownerData).forEach(ownerInfo => {
+
+            let detalle = ownerInfo[tipo];
+
+            Object.keys(detalle).forEach(key => {
+                dataAcumulada[key] = (dataAcumulada[key] || 0) + detalle[key];
+            });
+
+        });
+
+        labels = Object.keys(dataAcumulada);
+        data = Object.values(dataAcumulada);
+    }
+
+    // ✅ usar chart (NO ownerChart)
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data;
+
+    if (tipo === "severidad"){
+        chart.data.datasets[0].backgroundColor = labels.map(label => {
+
+            if (label.toLowerCase().includes("critica")) return "red";
+            if (label.toLowerCase().includes("alta")) return "orange";
+            if (label.toLowerCase().includes("media")) return "yellow";
+
+            return "gray";
+        });
+    }
+
+    else if (tipo === "reglas") {
+
+        const colores = ["blue"];
+
+        chart.data.datasets[0].backgroundColor =
+            labels.map((_, i) => colores[i % colores.length]);
+    }
+    else if (tipo === "general") {
+        chart.data.datasets[0].backgroundColor = "brown";
+    }
+
+    chart.update();
+}
+
+
+
+
+ownerSelect.addEventListener("change", updateChart);
+viewSelect.addEventListener("change", updateChart);
+
+
+updateChart()
+
+})();
+
+
+
+
+function exportarGraficos() {
+
+    const charts = [];
+
+    if (window.chartSeveridad) charts.push(window.chartSeveridad);
+    if (window.chartReglas) charts.push(window.chartReglas);
+    if (window.chartPie) charts.push(window.chartPie);
+    if (window.ownerChart) charts.push(window.ownerChart);
+
+    console.log("Charts encontrados:", charts);
+
+    if (charts.length === 0) {
+        alert("No hay gráficos disponibles para exportar");
+        return;
+    }
+
+    let images = charts.map(chart => chart.toBase64Image());
+
+    fetch("/exportar_excel", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ imagenes: images })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Error en servidor");
+        return response.blob();
+    })
+    .then(blob => {
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "reporte_auditoria.xlsx";
+        a.click();
+
+    })
+    .catch(error => {
+        console.error("ERROR EXPORT:", error);
+        alert("Error generando el Excel");
+    });
+}
+
+
+
+</script>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+
+[
+    {
+        "id": "LT_01",
+        "auditoria": "leadtimes",
+        "nombre": "Fecha de entrega anterior a orden",
+        "tipo": "fecha_menor",
+        "descripcion": "La fecha de entrega es anterior a la orden",
+        "columnas": ["revdelivdate", "orderdate"],
+        "severidad": "Alta",
+        "activa": true
+    },
+    {
+        "id": "LT_02",
+        "auditoria": "leadtimes",
+        "nombre": "ETD posterior a fecha entrega",
+        "tipo": "fecha_mayor",
+        "descripcion": "ETD ocurre después de la entrega",
+        "columnas": ["etd", "revdelivdate"],
+        "severidad": "Media",
+        "activa": true
+    },
+    {
+        "id": "LT_03",
+        "auditoria": "leadtimes",
+        "nombre": "ETD no informada",
+        "tipo": "etd_vacia",
+        "descripcion": "ETD no informada o inválida",
+        "columnas": ["etd"],
+        "severidad": "Alta",
+        "activa": true
+    },
+    {
+        "id": "LT_04",
+        "auditoria": "leadtimes",
+        "nombre": "LeadTime desviaciones",
+        "tipo": "leadtime_vs_base",
+        "descripcion": "El leadTime no es coherente",
+        "columnas": ["etd", "revdelivdate"],
+        "severidad": "Alta",
+        "activa": true
+    },
+    {
+        "id": "LCS_TIME",
+        "auditoria": "lifecycle",
+        "nombre": "Validación New selling - Current",
+        "tipo": "lifecycle_time",
+        "descripcion": "Valida si el estatus coincide con la edad del producto",
+        "columnas": ["status"],
+        "severidad": "Alta",
+        "activa": true
+    }
+   
+
+]

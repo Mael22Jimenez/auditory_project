@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4">
+    <h4>Reglas de Auditoría</h4>
+    <p class="text-muted">Listado y configuración de reglas de negocio.</p>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Regla</th>
+                <th>Severidad</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for regla in reglas %}
+                <tr>
+                    <td>{{ regla.id }}</td>
+                    <td>{{ regla.nombre }}</td>
+                    <td>{{ regla.severidad }}</td>
+                    <td>
+                        {% if regla.activa %}
+                            activa
+                        {% else %}
+                            inactiva
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+</div>
+{% endblock %}
