@@ -63,6 +63,11 @@ AUDITORIAS = {
         "nombre": "Validación Lifecycle",
         "bases_requeridas": ["Activations"],
         "reglas": ["LCS_TIME"]
+    },
+    "datos_faltantes":{
+        "nombre": "Validación datos faltantes",
+        "bases_requeridas":[],
+        "reglas": ["MS_01"]
     }
 }
 
@@ -194,7 +199,7 @@ def index():
 
         reglas_activas = config["reglas"]
 
-        inconsistencias = ejecutar_reglas(df, bases_data, reglas_activas)
+        inconsistencias = ejecutar_reglas(df, bases_data, reglas_activas, tipo_auditoria)
         guardar_resultados(inconsistencias)
 
         anomalias = detectar_anomalias(df)
@@ -624,14 +629,14 @@ def exportar_excel():
 
 
         # =========================
-        # ✅ HOJA ANOMALIAS
+        #  HOJA ANOMALIAS
         # =========================
         if not df_ano.empty:
             df_ano.to_excel(writer, sheet_name="Anomalias", index=False)
 
 
         # =========================
-        # ✅ HOJA RESUMEN
+        #  HOJA RESUMEN
         # =========================
         resumen = {
             "Total inconsistencias": [len(inconsistencias)],
@@ -643,7 +648,7 @@ def exportar_excel():
 
 
         # =========================
-        # ✅ HOJA SEVERIDAD (grafico)
+        #  HOJA SEVERIDAD (grafico)
         # =========================
         if inconsistencias:
             df_severidad = pd.DataFrame([
@@ -658,7 +663,7 @@ def exportar_excel():
 
 
         # =========================
-        # ✅ HOJA REGLAS (grafico)
+        #  HOJA REGLAS (grafico)
         # =========================
         if inconsistencias:
             df_reglas = pd.DataFrame([
@@ -673,7 +678,7 @@ def exportar_excel():
 
 
         # =========================
-        # ✅ HOJA OWNER (slicer)
+        #  HOJA OWNER (slicer)
         # =========================
         if inconsistencias:
             df_owner = pd.DataFrame([

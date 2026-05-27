@@ -54,7 +54,19 @@
                 <td>{{ inc.wh}}</td>
                 {% endif %}
 
-                <td>{{ inc.mensaje }}</td>
+                <td>
+                    {{ inc.mensaje }}
+                    {% if inc.columnas_faltantes %}
+                <div class="mt-2 text-danger">
+                    <b>Campos vacíos:</b> {{ inc.columnas_faltantes }}
+                </div>
+                {% endif %}
+                
+                </td>
+
+
+            
+
                 <td>
                     {% if inc.severidad == "Alta" %}
                         <span class="badge bg-danger">Alta</span>

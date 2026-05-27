@@ -49,7 +49,22 @@
         "columnas": ["status"],
         "severidad": "Alta",
         "activa": true
-    }
+    },
    
+    {
+        "id":"MS_01",
+        "auditoria": "datos_faltantes",
+        "nombre":"Datos faltantes",
+        "tipo": "datos_faltantes",
+        "descripcion": "Valida información faltante en Product Code Management",
+        "columnas": ["purch.price","masterboxlenght(in)", "masterboxwidth(in)", "masterboxheight", "masterboxweight(lb)"],
+        "severidad":"Alta",
+        "activa": true
+    }
+
+
+
+
+
 
 ]

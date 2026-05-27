@@ -13,7 +13,7 @@ def cargar_reglas():
         return json.load(f)
 
 
-def ejecutar_reglas(df, bases_data, reglas_activas):
+def ejecutar_reglas(df, bases_data, reglas_activas, tipo_auditoria=None):
         
         print("🔥 BASES_DATA CONTENT:", bases_data, flush=True)
 
@@ -30,7 +30,6 @@ def ejecutar_reglas(df, bases_data, reglas_activas):
             df_inv = pd.read_excel(bases_data[inventory_key])
 
 
-            
             inventory_key = None
 
             for key in bases_data:
@@ -45,9 +44,22 @@ def ejecutar_reglas(df, bases_data, reglas_activas):
 
 
             df_inv.columns = df_inv.columns.str.strip().str.lower()
-            df.columns = df.columns.str.strip().str.lower()
+            
+            df.columns = (
+                df.columns
+                .str.strip()
+                .str.lower()
+                .str.replace(" ", "", regex=False)
+            )
 
             
+            if "product" not in df.columns and "newcode" in df.columns:
+                df["product"] = df["newcode"]
+
+            if "owner" not in df.columns and "planner" in df.columns:
+                df["owner"] = df["planner"]
+
+
             def clean_key(x):
                 x = str(x).upper().strip()
                 x = x.replace("-", "").replace(" ", "")
@@ -72,6 +84,20 @@ def ejecutar_reglas(df, bases_data, reglas_activas):
                 how="left"
             )
 
+        
+    
+            if tipo_auditoria == "datos_faltantes" and "planner" in df.columns:
+                
+                df["owner"] = df["planner"]
+
+                df["owner"] = df["owner"].astype(str).str.strip()
+                df["owner"] = df["owner"].replace("", "SIN OWNER")
+
+            else:
+                df["owner"] = df["owner"].astype(str).str.strip()
+                df["owner"] = df["owner"].replace("", "SIN OWNER")
+
+
                         
             print("=== DEBUG AFTER MERGE ===")
             print("TOTAL ROWS:", len(df))
@@ -80,12 +106,9 @@ def ejecutar_reglas(df, bases_data, reglas_activas):
             print(df[["product", "product_key", "item_key", "owner"]].head(20))
 
 
-
-
         reglas = cargar_reglas()
         inconsistencias = []
 
-        
         for regla in reglas:
 
             if not regla.get("activa", False):
@@ -110,13 +133,15 @@ def ejecutar_reglas(df, bases_data, reglas_activas):
 
             elif tipo == "leadtime_vs_base":
                 inconsistencias.extend(
-                    regla_leadtime_vs_base(df, regla, bases_data)
-                )
+                    regla_leadtime_vs_base(df, regla, bases_data))
 
             elif tipo == "lifecycle_time":
                 inconsistencias.extend(
-                    regla_lifecycle_new_current(df, regla, bases_data)
-                )
+                    regla_lifecycle_new_current(df, regla, bases_data))
+
+            elif tipo == "datos_faltantes":
+                inconsistencias.extend(regla_datos_faltantes(df, regla))
+               
 
         inconsistencias_unicas = []
         seen = set()
@@ -367,11 +392,11 @@ def regla_leadtime_vs_base(df, regla, bases_data):
     if "product" not in df_base.columns:
         return []
 
-    # ✅ MANTENER TU LÓGICA ORIGINAL
+
     df_base["product"] = df_base["product"].astype(str).str.strip().str.upper()
 
     # ===============================
-    # 🔹 BASE MAP ORIGINAL (con fix de Series)
+    # 🔹 BASE MAP ORIGINAL 
     # ===============================
     base_map = {}
 
@@ -389,7 +414,7 @@ def regla_leadtime_vs_base(df, regla, bases_data):
         valor_new = row_base.get("newleadtimelogistics")
         origen = row_base.get("_source")
 
-        # ✅ FIX PARA SERIES (sin cambiar lógica original)
+        
         if isinstance(valor_new, pd.Series):
             valores_lista = valor_new.dropna().tolist()
         else:
@@ -531,9 +556,6 @@ def regla_leadtime_vs_base(df, regla, bases_data):
         })
 
     return inconsistencias
-
-
-
 
 
 
@@ -734,3 +756,49 @@ def regla_lifecycle_new_current(df, regla, bases_data):
 
     return inconsistencias
 
+
+
+def regla_datos_faltantes(df, regla):
+    
+        columnas = [
+                col.lower().replace(" ", "").replace(".", "")
+                for col in regla["columnas"]
+            ]
+
+        inconsistencias = []
+
+        
+        columnas_validas = [c for c in columnas if c in df.columns]
+
+        if not columnas_validas:
+            return inconsistencias
+
+        for _, row in df.iterrows():
+
+           
+            producto = str(
+                row.get("newcode") or row.get("product") or row.get("item") or ""
+            ).strip().upper()
+            owner = str(row.get("planner", "")).strip().upper() or "SIN OWNER"
+
+         
+            faltantes = []
+
+            for col in columnas_validas:
+                if pd.isna(row[col]) or str(row[col]).strip() == "":
+                    faltantes.append(col)
+
+            if faltantes:
+
+                inconsistencias.append({
+                    "regla_id": regla["id"],
+                    "fila": int(row["_excel_row"]),
+                    "producto": producto,
+                    "owner": owner,
+                    "columnas_faltantes": ", ".join(faltantes),  # 🔥 clave
+                    "mensaje": "Campos obligatorios vacios:",
+                    "severidad": regla["severidad"]
+                })
+            
+
+        return inconsistencias
