@@ -57,7 +57,7 @@
         "nombre":"Datos faltantes",
         "tipo": "datos_faltantes",
         "descripcion": "Valida información faltante en Product Code Management",
-        "columnas": ["purch.price","masterboxlenght(in)", "masterboxwidth(in)", "masterboxheight", "masterboxweight(lb)"],
+        "columnas": ["purch.price","masterboxlenght(in)", "masterboxwidth(in)", "masterboxheight", "masterboxweight(lb)", "logistics_leadtime", "vendor_leadtime"],
         "severidad":"Alta",
         "activa": true
     }

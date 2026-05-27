@@ -6,6 +6,8 @@ import io
 from datetime import datetime
 from urllib.parse import unquote
 from openpyxl.styles import PatternFill
+from openpyxl.worksheet.table import Table, TableStyleInfo
+
 
 import base64
 from openpyxl.drawing.image import Image as ExcelImage
@@ -609,13 +611,38 @@ def exportar_excel():
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
         # =========================
-        # ✅ HOJA INCONSISTENCIAS
+        #  HOJA INCONSISTENCIAS
         # =========================
         if not df_inc.empty:
 
             df_inc.to_excel(writer, sheet_name="Inconsistencias", index=False)
 
             ws = writer.sheets["Inconsistencias"]
+
+            
+            #  crear tabla estilo Excel
+            num_filas = ws.max_row
+            num_cols = ws.max_column
+
+            from openpyxl.utils import get_column_letter
+            last_col = get_column_letter(num_cols)
+
+            tabla = Table(
+                displayName="TablaInconsistencias",
+                ref=f"A1:{last_col}{num_filas}"
+            )
+
+            style = TableStyleInfo(
+                name="TableStyleMedium9", 
+                showFirstColumn=False,
+                showLastColumn=False,
+                showRowStripes=True,
+                showColumnStripes=False
+            )
+
+            tabla.tableStyleInfo = style
+            ws.add_table(tabla)
+
 
             for row_idx, inc in enumerate(inconsistencias, start=2):
 

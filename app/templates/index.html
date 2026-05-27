@@ -292,7 +292,7 @@ if (lifecycleDiv) {
     const ownerSelect = document.getElementById("ownerFilter");
     const viewSelect = document.getElementById("viewType");
 
-    // ✅ llenar dropdown owners
+    
     owners.forEach(owner => {
         let option = document.createElement("option");
         option.value = owner;
@@ -382,7 +382,7 @@ function updateChart() {
         data = Object.values(dataAcumulada);
     }
 
-    // ✅ usar chart (NO ownerChart)
+    //  usar chart (NO ownerChart)
     chart.data.labels = labels;
     chart.data.datasets[0].data = data;
 
