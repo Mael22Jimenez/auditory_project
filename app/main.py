@@ -36,6 +36,8 @@ METADATA_FILE = os.path.join(BASE_DIR, "data", "metadata.json")
 RESULTADOS_FILE = os.path.join(BASE_DIR, "data", "resultados.json")
 RESULTADOS_IA = os.path.join(BASE_DIR, "data", "resultados_ia.json")
 BASES_METADATA = os.path.join(BASES_FOLDER, "bases_metadata.json")
+HISTORICO_FILE = os.path.join(BASE_DIR, "data", "historico_auditorias.json" )
+ALERTAS_FILE = os.path.join(BASE_DIR, "data", "alertas.json")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BASES_FOLDER, exist_ok=True)
@@ -86,6 +88,49 @@ def cargar_json(path):
         return []
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+    
+def calcular_score(df, inconsistencias, anomalias ):
+    total= len(df) if len (df) > 0 else 1
+    error_rate=len(inconsistencias) / total
+    anomaly_rate = len (anomalias) / total
+
+    score = 200 - (error_rate * 60 + anomaly_rate * 40) * 100
+    return round (max(score, 0), 2)
+    
+def generar_alertas(df, inconsistencias, anomalias, estadisticas, analisis_inc):
+    alertas = []
+    total = len(df) if len (df) > 0 else 1
+
+    ratio_inc = len (inconsistencias) / total
+    if ratio_inc > 0.1:
+        alertas.append({
+            "tipo": "Calidad",
+            "nivel":"Critica",
+            "mensaje": f"Mas del 10% de inconsistencias({round(ratio_inc*100, 2)}%)"
+        })
+
+    ratio_ano = len (anomalias) / total
+    if ratio_ano > 0.08:
+        alertas.append({
+            "tipo": "Anomalias",
+            "nivel":"Alta",
+            "mensaje": f"Alta concentración de anomalias({round(ratio_inc*100, 2)}%)"
+        })
+
+
+    for c in estadisticas.get("calidad_datos", []):
+        if c["porcentaje_nulos"] > 20:
+            alertas.append({
+                            "tipo": "Datos",
+                            "nivel": "Alta",
+                            "mensaje": f"{c['columna']} tiene {c['porcentaje_nulos']}% nulos"
+                        })
+
+    return alertas
+
+
+
+
 
 def guardar_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
@@ -209,6 +254,37 @@ def index():
 
         
         analisis = ejecutar_analisis_completo(df, inconsistencias)
+        anomalias = analisis["anomalias"]
+        
+        score = calcular_score(df, inconsistencias, anomalias)
+
+        historico = cargar_json(HISTORICO_FILE)
+
+        historico.append({
+            "archivo": filename,
+            "fecha": datetime.now().strftime("%m-%d-%Y %H:%M"),
+            "registros": len(df),
+            "auditoria": tipo_auditoria,
+            "inconsistencias": len(inconsistencias),    
+            "anomalias": len(anomalias),
+            "score_calidad": score,
+            "tipo_auditoria": tipo_auditoria
+        })
+
+        guardar_json(HISTORICO_FILE, historico)
+
+        
+        alertas = generar_alertas(
+            df,
+            inconsistencias,
+            anomalias,
+            analisis["estadisticas"],
+            analisis["analisis_inconsistencias"]
+        )
+
+        guardar_json(ALERTAS_FILE, alertas)
+
+
         
         analisis_inc = analizar_inconsistencias(inconsistencias)
 
@@ -235,6 +311,11 @@ def index():
         }
 
         guardar_json(resumen_path, resumen)
+
+
+            
+
+
 
     # ===============================
     # 🔹 SIEMPRE CARGAR RESULTADOS
@@ -352,27 +433,35 @@ def resultados():
 @app.route("/anomalias")
 def anomalias():
     
+
     estadisticas_path = os.path.join(BASE_DIR, "data", "estadisticas.json")
     analisis_inc_path = os.path.join(BASE_DIR, "data", "analisis_inconsistencias.json")
+    insights_path = os.path.join(BASE_DIR, "data", "insights.json")
+    alertas_path = ALERTAS_FILE
 
     estadisticas = {}
     analisis_inc = {}
+    insights = []
+    alertas = []
 
     if os.path.exists(estadisticas_path):
-        with open(estadisticas_path, "r", encoding="utf-8") as f:
-            estadisticas = json.load(f)
+        estadisticas = cargar_json(estadisticas_path)
 
     if os.path.exists(analisis_inc_path):
-        with open(analisis_inc_path, "r", encoding="utf-8") as f:
-            analisis_inc = json.load(f)
+        analisis_inc = cargar_json(analisis_inc_path)
 
-    insights = generar_insights_completo(estadisticas, analisis_inc)
+    if os.path.exists(insights_path):
+        insights = cargar_json(insights_path)
+
+    if os.path.exists(alertas_path):
+        alertas = cargar_json(alertas_path)
 
     return render_template(
         "anomalias.html",
         anomalias=cargar_resultados_ia(),
         estadisticas=estadisticas,
-        insights=insights
+        insights=insights,
+        alertas=alertas
     )
 
 
@@ -533,6 +622,26 @@ def eliminar_base(filename):
     guardar_bases_metadata(metadata)
 
     return redirect(url_for("datos"))
+
+
+
+
+@app.route("/historico/eliminar/<filename>", methods=["POST"])
+def eliminar_por_archivo_route(filename):
+
+    historico = cargar_json(HISTORICO_FILE)
+
+   
+    historico_filtrado = [
+        h for h in historico if h.get("archivo") != filename
+    ]
+
+    guardar_json(HISTORICO_FILE, historico_filtrado)
+
+    return redirect(url_for("historico"))
+
+
+
 
 
 # ===============================
@@ -790,6 +899,16 @@ def exportar_excel():
         as_attachment=True
     )
 
+
+@app.route("/historico")
+def historico():
+
+    historico = cargar_json(HISTORICO_FILE)
+
+    return render_template(
+        "historico.html",
+        historico=historico
+    )
 
 # ===============================
 # EJECUCIÓN

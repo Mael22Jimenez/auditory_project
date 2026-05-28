@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Archivo</th>
+            <th>Auditoria</th>
+            <th>Fecha</th>
+            <th>Score</th>
+            <th>Inconsistencias</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for h in historico %}
+        <tr>
+            <td>{{ h.archivo }}</td>
+            <td>{{ h.tipo_auditoria }}</td>
+            <td>{{ h.fecha }}</td>
+            <td>{{ h.score_calidad }}</td>
+            <td>{{ h.inconsistencias }}</td>
+            <td>
+                <form
+                            method="POST" action="{{ url_for('eliminar_por_archivo_route', filename=h.archivo) }}"
+                        >
+                            <button class="btn btn-sm btn-danger">
+                                Eliminar
+                            </button>
+                        </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

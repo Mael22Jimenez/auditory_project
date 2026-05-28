@@ -8,6 +8,24 @@
         Análisis estadístico
     </p>
 
+    
+    {% if alertas %}
+    <div class="mt-4">
+        <h5>🚨 Alertas</h5>
+
+        {% for a in alertas %}
+        <div class="alert 
+            {% if a.nivel == 'Crítica' %}alert-danger
+            {% elif a.nivel == 'Alta' %}alert-warning
+            {% else %}alert-info{% endif %}">
+            
+            <strong>{{ a.tipo }}:</strong> {{ a.mensaje }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
     <!-- ===================== -->
     <!-- 🔹 RESUMEN GENERAL -->
     <!-- ===================== -->

@@ -1,0 +1,38 @@
+[
+    {
+        "archivo": "in transit 05222026.xlsx",
+        "fecha": "05-28-2026 16:23",
+        "registros": 2650,
+        "inconsistencias": 192,
+        "anomalias": 0,
+        "score_calidad": 0,
+        "tipo_auditoria": "leadtimes"
+    },
+    {
+        "archivo": "Inventory  report 05222026.xlsx",
+        "fecha": "05-28-2026 16:23",
+        "registros": 7763,
+        "inconsistencias": 1097,
+        "anomalias": 0,
+        "score_calidad": 0,
+        "tipo_auditoria": "lifecycle_status"
+    },
+    {
+        "archivo": "in transit 05222026.xlsx",
+        "fecha": "05-28-2026 16:23",
+        "registros": 2650,
+        "inconsistencias": 1246,
+        "anomalias": 0,
+        "score_calidad": 0,
+        "tipo_auditoria": "leadtime_vs_base"
+    },
+    {
+        "archivo": "product code management 05272026.xlsx",
+        "fecha": "05-28-2026 16:23",
+        "registros": 342,
+        "inconsistencias": 179,
+        "anomalias": 0,
+        "score_calidad": 0,
+        "tipo_auditoria": "datos_faltantes"
+    }
+]
