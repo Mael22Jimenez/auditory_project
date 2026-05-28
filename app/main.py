@@ -18,6 +18,9 @@ import tempfile
 from auditoria.validaciones import preparar_datos
 from auditoria.reglas import cargar_reglas, ejecutar_reglas
 from auditoria.anomalias_ia import detectar_anomalias
+from auditoria.anomalias_ia import ejecutar_analisis_completo
+from auditoria.anomalias_ia import generar_insights_completo
+from auditoria.anomalias_ia import analizar_inconsistencias
 
 
 app = Flask(__name__)
@@ -204,8 +207,23 @@ def index():
         inconsistencias = ejecutar_reglas(df, bases_data, reglas_activas, tipo_auditoria)
         guardar_resultados(inconsistencias)
 
-        anomalias = detectar_anomalias(df)
-        guardar_resultados_ia(anomalias)
+        
+        analisis = ejecutar_analisis_completo(df, inconsistencias)
+        
+        analisis_inc = analizar_inconsistencias(inconsistencias)
+
+        guardar_json(
+            os.path.join(BASE_DIR, "data", "analisis_inconsistencias.json"),
+            analisis_inc
+        )
+
+
+        anomalias = analisis ["anomalias"]
+
+        guardar_resultados_ia(analisis["anomalias"])
+        guardar_json(os.path.join(BASE_DIR, "data", "estadisticas.json"), analisis["estadisticas"])
+        guardar_json(os.path.join(BASE_DIR, "data", "insights.json"), analisis["insights"])
+
 
         resumen = {
             "archivo": filename,
@@ -333,10 +351,30 @@ def resultados():
 
 @app.route("/anomalias")
 def anomalias():
+    
+    estadisticas_path = os.path.join(BASE_DIR, "data", "estadisticas.json")
+    analisis_inc_path = os.path.join(BASE_DIR, "data", "analisis_inconsistencias.json")
+
+    estadisticas = {}
+    analisis_inc = {}
+
+    if os.path.exists(estadisticas_path):
+        with open(estadisticas_path, "r", encoding="utf-8") as f:
+            estadisticas = json.load(f)
+
+    if os.path.exists(analisis_inc_path):
+        with open(analisis_inc_path, "r", encoding="utf-8") as f:
+            analisis_inc = json.load(f)
+
+    insights = generar_insights_completo(estadisticas, analisis_inc)
+
     return render_template(
         "anomalias.html",
-        anomalias=cargar_resultados_ia()
+        anomalias=cargar_resultados_ia(),
+        estadisticas=estadisticas,
+        insights=insights
     )
+
 
 
 # ===============================

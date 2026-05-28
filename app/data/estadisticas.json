@@ -1,0 +1,363 @@
+{
+    "calidad_datos": [
+        {
+            "columna": "id",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 342,
+            "porcentaje_unicos": 100.0
+        },
+        {
+            "columna": "datereported",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 89,
+            "porcentaje_unicos": 26.02
+        },
+        {
+            "columna": "project",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 82,
+            "porcentaje_unicos": 23.98
+        },
+        {
+            "columna": "status",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 1,
+            "porcentaje_unicos": 0.29
+        },
+        {
+            "columna": "requestedby",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 16,
+            "porcentaje_unicos": 4.68
+        },
+        {
+            "columna": "approvedby",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 6,
+            "porcentaje_unicos": 1.75
+        },
+        {
+            "columna": "result",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 1,
+            "porcentaje_unicos": 0.29
+        },
+        {
+            "columna": "previouscode",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 166,
+            "porcentaje_unicos": 48.54
+        },
+        {
+            "columna": "newcode",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 328,
+            "porcentaje_unicos": 95.91
+        },
+        {
+            "columna": "issuedescription",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 316,
+            "porcentaje_unicos": 92.4
+        },
+        {
+            "columna": "productgroup",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 12,
+            "porcentaje_unicos": 3.51
+        },
+        {
+            "columna": "unit",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 2,
+            "porcentaje_unicos": 0.58
+        },
+        {
+            "columna": "priority",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 25,
+            "porcentaje_unicos": 7.31
+        },
+        {
+            "columna": "vendorcheck",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 3,
+            "porcentaje_unicos": 0.88
+        },
+        {
+            "columna": "country_origin",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 28,
+            "porcentaje_unicos": 8.19
+        },
+        {
+            "columna": "vendorname",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 50,
+            "porcentaje_unicos": 14.62
+        },
+        {
+            "columna": "readyforpo",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 3,
+            "porcentaje_unicos": 0.88
+        },
+        {
+            "columna": "kit_type",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 2,
+            "porcentaje_unicos": 0.58
+        },
+        {
+            "columna": "kof_components",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 75,
+            "porcentaje_unicos": 21.93
+        },
+        {
+            "columna": "kof_type",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 3,
+            "porcentaje_unicos": 0.88
+        },
+        {
+            "columna": "carpcode",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 3,
+            "porcentaje_unicos": 0.88
+        },
+        {
+            "columna": "family",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 5,
+            "porcentaje_unicos": 1.46
+        },
+        {
+            "columna": "category",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 20,
+            "porcentaje_unicos": 5.85
+        },
+        {
+            "columna": "type",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 39,
+            "porcentaje_unicos": 11.4
+        },
+        {
+            "columna": "material",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 17,
+            "porcentaje_unicos": 4.97
+        },
+        {
+            "columna": "diameter",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 16,
+            "porcentaje_unicos": 4.68
+        },
+        {
+            "columna": "capacity",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 16,
+            "porcentaje_unicos": 4.68
+        },
+        {
+            "columna": "pieces",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 13,
+            "porcentaje_unicos": 3.8
+        },
+        {
+            "columna": "color",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 16,
+            "porcentaje_unicos": 4.68
+        },
+        {
+            "columna": "planner",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 15,
+            "porcentaje_unicos": 4.39
+        },
+        {
+            "columna": "purchprice",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 226,
+            "porcentaje_unicos": 66.08
+        },
+        {
+            "columna": "peridoplanned",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 31,
+            "porcentaje_unicos": 9.06
+        },
+        {
+            "columna": "moq",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 31,
+            "porcentaje_unicos": 9.06
+        },
+        {
+            "columna": "vendor_leadtime",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 28,
+            "porcentaje_unicos": 8.19
+        },
+        {
+            "columna": "factory",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 7,
+            "porcentaje_unicos": 2.05
+        },
+        {
+            "columna": "source/mot",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 5,
+            "porcentaje_unicos": 1.46
+        },
+        {
+            "columna": "logistics_leadtime",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 17,
+            "porcentaje_unicos": 4.97
+        },
+        {
+            "columna": "unitspermasterbox",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 34,
+            "porcentaje_unicos": 9.94
+        },
+        {
+            "columna": "ncmcode",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 37,
+            "porcentaje_unicos": 10.82
+        },
+        {
+            "columna": "masterboxlenght(in)",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 68,
+            "porcentaje_unicos": 19.88
+        },
+        {
+            "columna": "masterboxwidth(in)",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 58,
+            "porcentaje_unicos": 16.96
+        },
+        {
+            "columna": "masterboxheight",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 75,
+            "porcentaje_unicos": 21.93
+        },
+        {
+            "columna": "masterboxweight(lb)",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 89,
+            "porcentaje_unicos": 26.02
+        },
+        {
+            "columna": "spanishname",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 320,
+            "porcentaje_unicos": 93.57
+        },
+        {
+            "columna": "portuguesname",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 302,
+            "porcentaje_unicos": 88.3
+        },
+        {
+            "columna": "mailsent",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 1,
+            "porcentaje_unicos": 0.29
+        },
+        {
+            "columna": "htsus",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 11,
+            "porcentaje_unicos": 3.22
+        },
+        {
+            "columna": "mxhts",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 2,
+            "porcentaje_unicos": 0.58
+        },
+        {
+            "columna": "tipodeelemento",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 1,
+            "porcentaje_unicos": 0.29
+        },
+        {
+            "columna": "rutadeacceso",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 1,
+            "porcentaje_unicos": 0.29
+        },
+        {
+            "columna": "_excel_row",
+            "nulos": 0,
+            "porcentaje_nulos": 0.0,
+            "valores_unicos": 342,
+            "porcentaje_unicos": 100.0
+        }
+    ],
+    "duplicados": 0,
+    "correlaciones_fuertes": []
+}

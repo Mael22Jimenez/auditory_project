@@ -1,16 +1,60 @@
-
-
 {% extends "base.html" %}
 
 {% block content %}
 <div class="p-4">
-    <h4>Anomalías detectadas por IA</h4>
+
+    <h4>Anomalías estadísticas</h4>
     <p class="text-muted">
-        Detección automática de comportamientos atípicos (modelo no supervisado)
+        Análisis estadístico
     </p>
 
+    <!-- ===================== -->
+    <!-- 🔹 RESUMEN GENERAL -->
+    <!-- ===================== -->
+    <div class="row mt-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Total anomalías</h6>
+                <h3 class="text-danger">{{ anomalias|length }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Promedio score</h6>
+                <h3>
+                    {{ anomalias | map(attribute='score') | sum // (anomalias|length if anomalias else 1) }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Críticas</h6>
+                <h3 class="text-danger">
+                    {{ anomalias | selectattr('severidad','equalto','Crítica') | list | length }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Con inconsistencia</h6>
+                <h3 class="text-warning">
+                    {{ anomalias | selectattr('tiene_inconsistencia','equalto',True) | list | length }}
+                </h3>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ===================== -->
+    <!-- 🔹 TABLA ANOMALIAS -->
+    <!-- ===================== -->
     {% if anomalias %}
-    <table class="table table-bordered table-hover mt-3">
+    <table class="table table-bordered table-hover mt-4">
         <thead class="table-dark">
             <tr>
                 <th>Fila</th>
@@ -22,20 +66,123 @@
         </thead>
         <tbody>
             {% for a in anomalias %}
-            <tr>
+            <tr class="{% if a.severidad == 'Crítica' %}table-danger{% endif %}">
                 <td>{{ a.fila }}</td>
                 <td>{{ a.score }}</td>
                 <td>{{ a.tipo }}</td>
                 <td>{{ a.descripcion }}</td>
-                <td class="text-danger">{{ a.severidad }}</td>
+                <td>
+                    {% if a.severidad == "Crítica" %}
+                        <span class="badge bg-danger">Crítica</span>
+                    {% elif a.severidad == "Alta" %}
+                        <span class="badge bg-warning">Alta</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ a.severidad }}</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
+    {% endif %}
+
+
+    <!-- ===================== -->
+    <!-- 🔹 ESTADISTICAS (NUEVO) -->
+    <!-- ===================== -->
+    {% if estadisticas.resumen_numerico %}
+    <div class="mt-5">
+        <h5>Resumen estadístico</h5>
+
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th>Columna</th>
+                    <th>Media</th>
+                    <th>Std</th>
+                    <th>Min</th>
+                    <th>P25</th>
+                    <th>P50</th>
+                    <th>P75</th>
+                    <th>Max</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for col, stats in estadisticas.resumen_numerico.items() %}
+                <tr>
+                    <td>{{ col }}</td>
+                    <td>{{ stats.mean }}</td>
+                    <td>{{ stats.std }}</td>
+                    <td>{{ stats.min }}</td>
+                    <td>{{ stats['25%'] }}</td>
+                    <td>{{ stats['50%'] }}</td>
+                    <td>{{ stats['75%'] }}</td>
+                    <td>{{ stats.max }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+
+    <!-- ===================== -->
+    <!-- 🔹 CALIDAD DE DATOS -->
+    <!-- ===================== -->
+    {% if estadisticas.calidad_datos %}
+    <div class="mt-5">
+        <h5>Calidad de datos</h5>
+
+        <table class="table table-sm table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Columna</th>
+                    <th>% Nulos</th>
+                    <th>Valores únicos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in estadisticas.calidad_datos %}
+                <tr>
+                    <td>{{ c.columna }}</td>
+                    <td class="{% if c.porcentaje_nulos > 20 %}text-danger{% endif %}">
+                        {{ c.porcentaje_nulos }}%
+                    </td>
+                    <td>{{ c.valores_unicos }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+
+    <!-- ===================== -->
+    <!-- 🔹 INSIGHTS -->
+    <!-- ===================== -->
+    {% if insights %}
+    <div class="mt-5">
+        <h5>Insights automáticos</h5>
+
+        <ul class="list-group">
+            {% for i in insights %}
+                <li class="list-group-item">{{ i }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+
+    <!-- ===================== -->
+    <!-- 🔹 CASO SIN ANOMALIAS -->
+    <!-- ===================== -->
+    {% if not anomalias %}
         <div class="alert alert-success mt-4">
             No se detectaron anomalías estadísticamente significativas.
+            <br>
+            <small>Los datos se encuentran dentro de rangos normales.</small>
         </div>
     {% endif %}
+
 </div>
 {% endblock %}

@@ -1,0 +1,42 @@
+{
+    "por_regla": {
+        "MS_01": 179
+    },
+    "por_owner": {
+        "PAULO PIRES": 75,
+        "RAFAEL PEREIRA": 21,
+        "JUAN PALACIO": 18,
+        "FABIANA PRADO": 18,
+        "JAIR INFANTE": 17,
+        "RAFAEL BARASAL": 10,
+        "KAREN EINERSON": 7,
+        "LIZETH SUAREZ": 5,
+        "ANA GRANEY": 4,
+        "KAREN EINERSON": 3,
+        "LEONARDO NEIRA": 1
+    },
+    "por_severidad": {
+        "Alta": 179
+    },
+    "columnas_problematicas": {
+        "masterboxwidth(in)": 171,
+        "masterboxweight(lb)": 162,
+        "masterboxlenght(in)": 158,
+        "masterboxheight": 158,
+        "purchprice": 73,
+        "vendor_leadtime": 73,
+        "logistics_leadtime": 20
+    },
+    "top_productos": {
+        "39,497": 14,
+        "LT2497": 1,
+        "LT1222": 1,
+        "CO4008": 1,
+        "CO4005": 1,
+        "PR9001": 1,
+        "PR9002": 1,
+        "PR9003": 1,
+        "PR9004": 1,
+        "PR9005": 1
+    }
+}
